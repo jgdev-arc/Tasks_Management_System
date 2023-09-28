@@ -49,4 +49,55 @@ public class TaskServiceImpl implements TaskService {
         return tasks.stream().map((task) -> modelMapper.map(task, TaskDTO.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public TaskDTO updateTask(TaskDTO taskDTO, Long id) {
+
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task with ID of: " + id + " not found."));
+
+        task.setTitle(taskDTO.getTitle());
+        task.setDescription(taskDTO.getDescription());
+        task.setCompleted(taskDTO.isCompleted());
+
+        Task updatedTask = taskRepository.save(task);
+
+        return modelMapper.map(updatedTask, TaskDTO.class);
+    }
+
+    @Override
+    public void deleteTask(Long id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task with ID of: " + id + " not found."));
+
+        taskRepository.deleteById(id);
+    }
+
+    @Override
+    public TaskDTO completeTask(Long id) {
+
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task with ID of: " + id + " not found."));
+
+        task.setCompleted(Boolean.TRUE);
+
+        Task updatedTask = taskRepository.save(task);
+
+        return modelMapper.map(updatedTask, TaskDTO.class);
+    }
+
+    @Override
+    public TaskDTO incompleteTask(Long id) {
+
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task with ID of: " + id + " not found."));
+
+        task.setCompleted(Boolean.FALSE);
+
+        Task updatedTask = taskRepository.save(task);
+
+        return modelMapper.map(updatedTask, TaskDTO.class);
+    }
+
+
 }
